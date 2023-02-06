@@ -453,242 +453,7 @@
         <script type='text/javascript' src='wp-content/plugins/revslider/public/assets/js/rs6.min.js?ver=6.4.6' id='revmin-js'></script>
         <link rel="https://api.w.org/" href="wp-json/" />
         <link rel="alternate" type="application/json" href="wp-json/wp/v2/pages/12264" />
-        <meta name="framework" content="Redux 4.2.14" />
-        <script id="wpcp_disable_selection" type="text/javascript">
-            var image_save_msg = 'You are not allowed to save images!';
-            var no_menu_msg = 'Context Menu disabled!';
-            var smessage = "Content is protected, you’re not allowed to perform this action !!";
-
-            function disableEnterKey(e) {
-                var elemtype = e.target.tagName;
-                elemtype = elemtype.toUpperCase();
-                if (elemtype == "TEXT" || elemtype == "TEXTAREA" || elemtype == "INPUT" || elemtype == "PASSWORD" || elemtype == "SELECT" || elemtype == "OPTION" || elemtype == "EMBED") {
-                    elemtype = 'TEXT';
-                }
-                if (e.ctrlKey) {
-                    var key;
-                    if (window.event) key = window.event.keyCode; //IE
-                    else key = e.which; //firefox (97)
-                    //if (key != 17) alert(key);
-                    if (elemtype != 'TEXT' && (key == 97 || key == 65 || key == 67 || key == 99 || key == 88 || key == 120 || key == 26 || key == 85 || key == 86 || key == 83 || key == 43 || key == 73)) {
-                        if (wccp_free_iscontenteditable(e)) return true;
-                        show_wpcp_message('You are not allowed to copy content or view source');
-                        return false;
-                    } else return true;
-                }
-            }
-            /*For contenteditable tags*/
-            function wccp_free_iscontenteditable(e) {
-                var e = e || window.event; // also there is no e.target property in IE. instead IE uses window.event.srcElement
-                var target = e.target || e.srcElement;
-                var elemtype = e.target.nodeName;
-                elemtype = elemtype.toUpperCase();
-                var iscontenteditable = "false";
-                if (typeof target.getAttribute != "undefined") iscontenteditable = target.getAttribute("contenteditable"); // Return true or false as string
-                var iscontenteditable2 = false;
-                if (typeof target.isContentEditable != "undefined") iscontenteditable2 = target.isContentEditable; // Return true or false as boolean
-                if (target.parentElement.isContentEditable) iscontenteditable2 = true;
-                if (iscontenteditable == "true" || iscontenteditable2 == true) {
-                    if (typeof target.style != "undefined") target.style.cursor = "text";
-                    return true;
-                }
-            }
-            ////////////////////////////////////
-            function disable_copy(e) {
-                var e = e || window.event; // also there is no e.target property in IE. instead IE uses window.event.srcElement
-                var elemtype = e.target.tagName;
-                elemtype = elemtype.toUpperCase();
-                if (elemtype == "TEXT" || elemtype == "TEXTAREA" || elemtype == "INPUT" || elemtype == "PASSWORD" || elemtype == "SELECT" || elemtype == "OPTION" || elemtype == "EMBED") {
-                    elemtype = 'TEXT';
-                }
-                if (wccp_free_iscontenteditable(e)) return true;
-                var isSafari = /Safari/.test(navigator.userAgent) && /Apple Computer/.test(navigator.vendor);
-                var checker_IMG = '';
-                if (elemtype == "IMG" && checker_IMG == 'checked' && e.detail >= 2) {
-                    show_wpcp_message(alertMsg_IMG);
-                    return false;
-                }
-                if (elemtype != "TEXT") {
-                    if (smessage !== "" && e.detail == 2) show_wpcp_message(smessage);
-                    if (isSafari) return true;
-                    else return false;
-                }
-            }
-            //////////////////////////////////////////
-            function disable_copy_ie() {
-                var e = e || window.event;
-                var elemtype = window.event.srcElement.nodeName;
-                elemtype = elemtype.toUpperCase();
-                if (wccp_free_iscontenteditable(e)) return true;
-                if (elemtype == "IMG") {
-                    show_wpcp_message(alertMsg_IMG);
-                    return false;
-                }
-                if (elemtype != "TEXT" && elemtype != "TEXTAREA" && elemtype != "INPUT" && elemtype != "PASSWORD" && elemtype != "SELECT" && elemtype != "OPTION" && elemtype != "EMBED") {
-                    return false;
-                }
-            }
-
-            function reEnable() {
-                return true;
-            }
-            document.onkeydown = disableEnterKey;
-            document.onselectstart = disable_copy_ie;
-            if (navigator.userAgent.indexOf('MSIE') == -1) {
-                document.onmousedown = disable_copy;
-                document.onclick = reEnable;
-            }
-
-            function disableSelection(target) {
-                //For IE This code will work
-                if (typeof target.onselectstart != "undefined") target.onselectstart = disable_copy_ie;
-                //For Firefox This code will work
-                else if (typeof target.style.MozUserSelect != "undefined") {
-                    target.style.MozUserSelect = "none";
-                }
-                //All other  (ie: Opera) This code will work
-                else target.onmousedown = function() {
-                    return false
-                }
-                target.style.cursor = "default";
-            }
-            //Calling the JS function directly just after body load
-            window.onload = function() {
-                disableSelection(document.body);
-            };
-            //////////////////special for safari Start////////////////
-            var onlongtouch;
-            var timer;
-            var touchduration = 1000; //length of time we want the user to touch before we do something
-            var elemtype = "";
-
-            function touchstart(e) {
-                var e = e || window.event;
-                // also there is no e.target property in IE.
-                // instead IE uses window.event.srcElement
-                var target = e.target || e.srcElement;
-                elemtype = window.event.srcElement.nodeName;
-                elemtype = elemtype.toUpperCase();
-                if (!wccp_pro_is_passive()) e.preventDefault();
-                if (!timer) {
-                    timer = setTimeout(onlongtouch, touchduration);
-                }
-            }
-
-            function touchend() {
-                //stops short touches from firing the event
-                if (timer) {
-                    clearTimeout(timer);
-                    timer = null;
-                }
-                onlongtouch();
-            }
-            onlongtouch = function(e) { //this will clear the current selection if anything selected
-                if (elemtype != "TEXT" && elemtype != "TEXTAREA" && elemtype != "INPUT" && elemtype != "PASSWORD" && elemtype != "SELECT" && elemtype != "EMBED" && elemtype != "OPTION") {
-                    if (window.getSelection) {
-                        if (window.getSelection().empty) { // Chrome
-                            window.getSelection().empty();
-                        } else if (window.getSelection().removeAllRanges) { // Firefox
-                            window.getSelection().removeAllRanges();
-                        }
-                    } else if (document.selection) { // IE?
-                        document.selection.empty();
-                    }
-                    return false;
-                }
-            };
-            document.addEventListener("DOMContentLoaded", function(event) {
-                window.addEventListener("touchstart", touchstart, false);
-                window.addEventListener("touchend", touchend, false);
-            });
-
-            function wccp_pro_is_passive() {
-                var cold = false,
-                    hike = function() {};
-                try {
-                    const object1 = {};
-                    var aid = Object.defineProperty(object1, 'passive', {
-                        get() {
-                            cold = true
-                        }
-                    });
-                    window.addEventListener('test', hike, aid);
-                    window.removeEventListener('test', hike, aid);
-                } catch (e) {}
-                return cold;
-            }
-            /*special for safari End*/
-        </script>
-        <script id="wpcp_disable_Right_Click" type="text/javascript">
-            document.ondragstart = function() {
-                return false;
-            }
-
-            function nocontext(e) {
-                return false;
-            }
-            document.oncontextmenu = nocontext;
-        </script>
-        <link rel="shortcut icon" type="image/x-icon" href="wp-content/uploads/2021/04/favicon.png">
-        <style type="text/css">
-            .recentcomments a {
-                display: inline !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-        </style>
-        <meta name="generator" content="Powered by Slider Revolution 6.4.6 - responsive, Mobile-Friendly Slider Plugin for WordPress with comfortable drag and drop interface." />
-        <script type="text/javascript">
-            function setREVStartSize(e) {
-                //window.requestAnimationFrame(function() {				 
-                window.RSIW = window.RSIW === undefined ? window.innerWidth : window.RSIW;
-                window.RSIH = window.RSIH === undefined ? window.innerHeight : window.RSIH;
-                try {
-                    var pw = document.getElementById(e.c).parentNode.offsetWidth,
-                        newh;
-                    pw = pw === 0 || isNaN(pw) ? window.RSIW : pw;
-                    e.tabw = e.tabw === undefined ? 0 : parseInt(e.tabw);
-                    e.thumbw = e.thumbw === undefined ? 0 : parseInt(e.thumbw);
-                    e.tabh = e.tabh === undefined ? 0 : parseInt(e.tabh);
-                    e.thumbh = e.thumbh === undefined ? 0 : parseInt(e.thumbh);
-                    e.tabhide = e.tabhide === undefined ? 0 : parseInt(e.tabhide);
-                    e.thumbhide = e.thumbhide === undefined ? 0 : parseInt(e.thumbhide);
-                    e.mh = e.mh === undefined || e.mh == "" || e.mh === "auto" ? 0 : parseInt(e.mh, 0);
-                    if (e.layout === "fullscreen" || e.l === "fullscreen") newh = Math.max(e.mh, window.RSIH);
-                    else {
-                        e.gw = Array.isArray(e.gw) ? e.gw : [e.gw];
-                        for (var i in e.rl)
-                            if (e.gw[i] === undefined || e.gw[i] === 0) e.gw[i] = e.gw[i - 1];
-                        e.gh = e.el === undefined || e.el === "" || (Array.isArray(e.el) && e.el.length == 0) ? e.gh : e.el;
-                        e.gh = Array.isArray(e.gh) ? e.gh : [e.gh];
-                        for (var i in e.rl)
-                            if (e.gh[i] === undefined || e.gh[i] === 0) e.gh[i] = e.gh[i - 1];
-                        var nl = new Array(e.rl.length),
-                            ix = 0,
-                            sl;
-                        e.tabw = e.tabhide >= pw ? 0 : e.tabw;
-                        e.thumbw = e.thumbhide >= pw ? 0 : e.thumbw;
-                        e.tabh = e.tabhide >= pw ? 0 : e.tabh;
-                        e.thumbh = e.thumbhide >= pw ? 0 : e.thumbh;
-                        for (var i in e.rl) nl[i] = e.rl[i] < window.RSIW ? 0 : e.rl[i];
-                        sl = nl[0];
-                        for (var i in nl)
-                            if (sl > nl[i] && nl[i] > 0) {
-                                sl = nl[i];
-                                ix = i;
-                            }
-                        var m = pw > (e.gw[ix] + e.tabw + e.thumbw) ? 1 : (pw - (e.tabw + e.thumbw)) / (e.gw[ix]);
-                        newh = (e.gh[ix] * m) + (e.tabh + e.thumbh);
-                    }
-                    if (window.rs_init_css === undefined) window.rs_init_css = document.head.appendChild(document.createElement("style"));
-                    document.getElementById(e.c).height = newh + "px";
-                    window.rs_init_css.innerHTML += "#" + e.c + "_wrapper { height: " + newh + "px }";
-                } catch (e) {
-                    console.log("Failure at Presize of Slider:" + e)
-                }
-                //});
-            };
-        </script>
+       
         <!-- Typography -->
         <style>
             body {
@@ -2251,7 +2016,7 @@
                                                 <section class="elementor-section elementor-top-section elementor-element elementor-element-e876e8e elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="e876e8e" data-element_type="section">
                                                     <div class="elementor-container elementor-column-gap-default">
                                                         <div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-48bcc38" data-id="48bcc38" data-element_type="column">
-                                                            <div class="elementor-widget-wrap elementor-element-populated">
+                                                            <div class="elementor-widget-wrap elementor-element-populated" style="margin:0px 20px 0px 0px">
                                                                 <div class="elementor-element elementor-element-72d5348 elementor-widget elementor-widget-rs-heading" data-id="72d5348" data-element_type="widget" data-widget_type="rs-heading.default">
                                                                     <div class="elementor-widget-container">
                                                                         <div class="rs-heading style7  ">
@@ -2290,17 +2055,33 @@
                                                         </div>
                                                     </div>
                                                 </section>
+
                                                 <section class="elementor-section elementor-top-section elementor-element elementor-element-e876e8e elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="e876e8e" data-element_type="section">
                                                     <div class="elementor-container elementor-column-gap-default">
-                                                        <div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-48bcc38" data-id="48bcc38" data-element_type="column">
+                                                        
+                                                        <div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-8e8277e" data-id="8e8277e" data-element_type="column">
                                                             <div class="elementor-widget-wrap elementor-element-populated">
+                                                                <div class="elementor-element elementor-element-32353ec elementor-widget elementor-widget-text-editor" data-id="32353ec" data-element_type="widget" data-widget_type="text-editor.default">
+                                                                    <div class="elementor-widget-container" >
+                                                                        <p style="text-align:right;">I feel fortunate to have the pleasure of being a part of Ace Packaging. Over the years, our motive has been ‘Devotion and Honesty in whatever we do’. Our highest ethical standards include keeping our clients’ needs as the priority. We have been responsible in developing stringent parameters for all the products and ensuring that the best products go out of the factory Premises. </p>
+                                                                        <p style="text-align:right;" >I thank all our clients worldwide and the supporters who make us what we are. And lastly, our employees who serve with sheer responsibility to make us proudly exceed years of excellence in this field.</p>
+                                                                        <p style="text-align: right;">
+                                                                            <em>&#8211; Pawan Jain, Managing Director</em>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-48bcc38" data-id="48bcc38" data-element_type="column">
+                                                            <div class="elementor-widget-wrap elementor-element-populated" style="margin:0px 0px 0px 4C0px">
                                                                 <div class="elementor-element elementor-element-72d5348 elementor-widget elementor-widget-rs-heading" data-id="72d5348" data-element_type="widget" data-widget_type="rs-heading.default">
                                                                     <div class="elementor-widget-container">
                                                                         <div class="rs-heading style7  ">
                                                                             <div class="title-inner">
                                                                                 <!-- <span class="sub-text">Founder Speaks</span> -->
                                                                                 <h2 class="title">
-                                                                                    <span class="watermark"></span>Message from our Director
+                                                                                    <span class="watermark" style="text-align:right;"></span>Message from our Director
                                                                                 </h2>
                                                                             </div>
                                                                         </div>
@@ -2313,25 +2094,14 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-8e8277e" data-id="8e8277e" data-element_type="column">
-                                                            <div class="elementor-widget-wrap elementor-element-populated">
-                                                                <div class="elementor-element elementor-element-32353ec elementor-widget elementor-widget-text-editor" data-id="32353ec" data-element_type="widget" data-widget_type="text-editor.default">
-                                                                    <div class="elementor-widget-container">
-                                                                        <p>I feel fortunate to have the pleasure of being a part of Ace Packaging. Over the years, our motive has been ‘Devotion and Honesty in whatever we do’. Our highest ethical standards include keeping our clients’ needs as the priority. We have been responsible in developing stringent parameters for all the products and ensuring that the best products go out of the factory Premises. </p>
-                                                                        <p>I thank all our clients worldwide and the supporters who make us what we are. And lastly, our employees who serve with sheer responsibility to make us proudly exceed years of excellence in this field.</p>
-                                                                        <p style="text-align: right;">
-                                                                            <em>&#8211; Pawan Jain, Managing Director</em>
-                                                                        </p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                     
                                                     </div>
                                                 </section>
+
                                                 <section class="elementor-section elementor-top-section elementor-element elementor-element-e876e8e elementor-section-content-middle elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="e876e8e" data-element_type="section">
                                                     <div class="elementor-container elementor-column-gap-default">
                                                         <div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-48bcc38" data-id="48bcc38" data-element_type="column">
-                                                            <div class="elementor-widget-wrap elementor-element-populated">
+                                                            <div class="elementor-widget-wrap elementor-element-populated" style="margin:0px 20px 0px 0px">
                                                                 <div class="elementor-element elementor-element-72d5348 elementor-widget elementor-widget-rs-heading" data-id="72d5348" data-element_type="widget" data-widget_type="rs-heading.default">
                                                                     <div class="elementor-widget-container">
                                                                         <div class="rs-heading style7  ">
@@ -2366,6 +2136,7 @@
                                                         </div>
                                                     </div>
                                                 </section>
+                                                
                                                 <section class="elementor-section elementor-top-section elementor-element elementor-element-907d887 elementor-section-boxed elementor-section-height-default elementor-section-height-default" data-id="907d887" data-element_type="section">
                                                     <div class="elementor-container elementor-column-gap-default">
                                                         <div class="elementor-column elementor-col-50 elementor-top-column elementor-element elementor-element-0b6ad4f" data-id="0b6ad4f" data-element_type="column" data-settings="{&quot;background_background&quot;:&quot;classic&quot;}">
